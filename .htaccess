@@ -1,0 +1,5 @@
+RewriteEngine On
+
+# If accessing example directory
+RewriteCond %{REQUEST_URI} ^/example/(.*)$ [NC]
+RewriteRule ^example/(.*)$ example/public/index.php [QSA,L] 

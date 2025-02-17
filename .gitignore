@@ -1,0 +1,105 @@
+# Composer
+/vendor/
+/example/vendor/
+composer.lock
+/example/composer.lock
+
+# PHPUnit
+.phpunit.result.cache
+.phpunit.cache/
+phpunit.xml.dist
+
+# PHP_CodeSniffer
+.php_cs.cache
+
+# PHPStan
+phpstan.neon
+
+# IDE & Editors
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Cache and logs
+/logs/
+/cache/
+/example/cache/*
+!example/cache/.gitignore
+*.log
+
+# Test coverage reports
+/coverage/
+/coverage.xml
+/clover.xml
+
+# Development tools
+.php-cs-fixer.cache
+.php-cs-fixer.php
+.phpunit.result.cache
+.phpunit.cache
+.phpcs.xml
+.phpcs.xml.dist
+
+# Editor specific
+*.code-workspace
+.history/
+*.iml
+
+# System specific
+._*
+.DocumentRevisions-V100
+.fseventsd
+.TemporaryItems
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Yarn
+.yarn-integrity
+.yarn-metadata.json
+.yarn/
+yarn-debug.log*
+yarn-error.log*
+
+# dotenv environment variable files
+.env.*
+!.env.example
+
+# Cache files
+*.cache
+cache/*
+!cache/.gitignore
+
+# Example specific
+/example/public/hot
+/example/public/storage
+/example/storage/*.key 
