@@ -1,10 +1,9 @@
 <?php
 
 use Piri\Core\Router;
-use Example\Controller\HomeController;
-use Example\Controller\UserController;
-use Example\Middleware\AuthMiddleware;
 use Example\Middleware\LoggingMiddleware;
+use Example\Middleware\AuthMiddleware;
+use Example\Controller\HomeController;
 
 // If router is not passed, create a new instance
 if (!isset($router)) {
@@ -14,20 +13,27 @@ if (!isset($router)) {
 // Add global middleware
 $router->addGlobalMiddleware(new LoggingMiddleware());
 
-// Register controllers with attributes
+// Register controllers
 $router->registerClass(HomeController::class);
-$router->registerClass(UserController::class);
 
-// Define routes
-$router->get('/', function() {
-    return 'Welcome to Piri Router!';
+// Define the API group with explicit routes for api_root group
+$router->group(['prefix' => '/api', 'name' => 'api_root'], function(Router $router) {
 });
 
-// API routes with middleware
-$router->group(['prefix' => '/api'], function(Router $router) {
-    $router->get('/status', function() {
-        return ['status' => 'OK', 'timestamp' => time()];
+// Register other controllers by namespace
+$router->registerNamespace('Example\Controller');
+
+// Additional nested group example
+$router->group(['prefix' => 'something'], function(Router $router) {
+    $router->group(['prefix' => '/api', 'name' => 'api_root'], function(Router $router) {
+        $router->get('/status', function() {
+            return ['status' => 'OK', 'timestamp' => time()];
+        });
     });
+});
+
+$router->get('/test', function() {
+    return 'This path is from the routes.php file and not from the controller';
 });
 
 // Add this file to route cache tracking

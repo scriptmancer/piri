@@ -45,13 +45,12 @@ use Piri\Core\Router;
 
 $router = new Router();
 
-// Enable route caching in production
-if (getenv('APP_ENV') !== 'local') {
-    $router->enableCache(__DIR__ . '/../cache');
-}
-
 // Load routes
 require __DIR__ . '/routes.php';
 
-// Run the router
-$router->run(); 
+// Handle the request with configuration options
+$router->handle([
+    'cache_dir' => getenv('APP_ENV') !== 'local' ? __DIR__ . '/../cache' : null,
+    'debug' => getenv('APP_ENV') === 'local',
+    'json_options' => JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
+]); 

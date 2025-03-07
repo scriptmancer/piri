@@ -19,6 +19,9 @@ A modern, attribute-based PHP router with powerful features for building web app
 - ⚡ Route priority ordering
 - 🔄 Optional parameters
 - 🛡️ Type-safe implementation
+- 🚀 Streamlined request handling with minimal boilerplate
+- 🧩 Namespace-based controller registration
+- 🔄 Group-based attribute routing
 
 ## Installation
 
@@ -76,9 +79,8 @@ class UserController
 $router = new Router();
 $router->registerClass(UserController::class);
 
-// Match a route
-$route = $router->match('GET', '/api/users/123');
-$result = $router->execute($route);
+// Handle the request with a single line of code
+$router->handle();
 ```
 
 ### 2. Using Method Calls
@@ -117,7 +119,6 @@ $router->group(['prefix' => '/admin', 'middleware' => [AdminAuth::class]], funct
 require_once 'vendor/autoload.php'; // or your custom autoloader
 
 use Piri\Core\Router;
-use Piri\Exceptions\RouteNotFoundException;
 
 $router = new Router();
 
@@ -130,31 +131,83 @@ $router->get('/hello/{name}', function(array $params) {
     return 'Hello, ' . $params['name'];
 });
 
-// Handle the request
-try {
-    $method = $_SERVER['REQUEST_METHOD'];
-    $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-    
-    $route = $router->match($method, $path);
-    $result = $router->execute($route);
-    
-    // Handle the response
-    if (is_array($result)) {
-        header('Content-Type: application/json');
-        echo json_encode($result);
-    } else {
-        echo $result;
-    }
-} catch (RouteNotFoundException $e) {
-    http_response_code(404);
-    echo '404 Not Found';
-} catch (\Exception $e) {
-    http_response_code(500);
-    echo 'Internal Server Error';
-}
+// Handle the request with a single line of code
+$router->handle([
+    'cache_dir' => __DIR__ . '/cache',  // Enable caching (optional)
+    'debug' => true,                    // Show detailed errors in development
+]);
 ```
 
-### 4. Middleware Example
+### 4. Advanced Integration Example
+
+```php
+// index.php
+<?php
+
+require_once 'vendor/autoload.php';
+
+use Piri\Core\Router;
+use Piri\Exceptions\RouteNotFoundException;
+
+$router = new Router();
+
+// Load routes from a separate file
+require_once 'routes.php';
+
+// Handle the request with custom error handling
+$router->handle([
+    'cache_dir' => getenv('APP_ENV') === 'production' ? __DIR__ . '/cache' : null,
+    'debug' => getenv('APP_ENV') !== 'production',
+    'json_options' => JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE,
+    'error_handler' => function(\Exception $e) {
+        if ($e instanceof RouteNotFoundException) {
+            http_response_code(404);
+            include 'templates/404.php';
+        } else {
+            http_response_code(500);
+            error_log($e->getMessage());
+            include 'templates/500.php';
+        }
+    }
+]);
+```
+
+### 5. Group-Based Attribute Routing
+
+You can define routes that belong to a group using the `group` attribute parameter:
+
+```php
+// In your controller
+class ApiController
+{
+    #[Route('/status', group: 'api_root')]
+    public function status(): string
+    {
+        return 'API Status';
+    }
+    
+    #[Route('/config', group: 'api_root')]
+    public function config(): array
+    {
+        return ['version' => '1.0'];
+    }
+}
+
+// In your routes.php file
+$router->registerClass(ApiController::class);
+
+// Define the group with a prefix
+$router->group(['prefix' => '/api', 'name' => 'api_root'], function(Router $router) {
+    // Routes from ApiController with group:'api_root' will be automatically
+    // registered with the prefix '/api'
+});
+```
+
+This will register the following routes:
+- `GET /api/status` - from the `status()` method
+- `GET /api/config` - from the `config()` method
+
+### 6. Middleware Example
 
 ```php
 use Piri\Contracts\MiddlewareInterface;

@@ -3,12 +3,12 @@
     "description": "Example application demonstrating Piri Router usage",
     "type": "project",
     "require": {
-        "php": "^8.1",
-        "scriptmancer/piri": "*"
+        "php": "^8.1"
     },
     "autoload": {
         "psr-4": {
-            "Example\\": "src/"
+            "Example\\": "src/",
+            "Piri\\": "../src/"
         }
     },
     "minimum-stability": "dev",

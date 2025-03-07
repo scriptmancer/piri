@@ -40,4 +40,16 @@ class HomeController
     {
         return 'About Page';
     }
+
+    #[Route('/config_to_attribute', group:'api_root')]
+    public function apiRoot(): string
+    {
+        return 'This route is registered with the api_root group which is defined in the routes.php file';
+    }
+
+    #[Route('/status', group:'api_root')]
+    public function status(): string
+    {
+        return 'This route is registered with the api_root group which is defined in the routes.php file';
+    }
 } 

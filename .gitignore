@@ -8,6 +8,7 @@ composer.lock
 .phpunit.result.cache
 .phpunit.cache/
 phpunit.xml.dist
+phpunit.xml
 
 # PHP_CodeSniffer
 .php_cs.cache
@@ -102,4 +103,8 @@ cache/*
 # Example specific
 /example/public/hot
 /example/public/storage
-/example/storage/*.key 
+/example/storage/*.key
+/example/public/test_*.php
+
+# Celebi documentation (temporary)
+/docs/celebi/ 
