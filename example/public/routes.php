@@ -1,5 +1,6 @@
 <?php
 
+use Example\Controller\ApiController;
 use Piri\Core\Router;
 use Example\Middleware\LoggingMiddleware;
 use Example\Middleware\AuthMiddleware;
@@ -35,6 +36,8 @@ $router->group(['prefix' => 'something'], function(Router $router) {
 $router->get('/test', function() {
     return 'This path is from the routes.php file and not from the controller';
 });
+
+$router->add('GET', '/api/data', [ApiController::class, 'handleData']);
 
 // Add this file to route cache tracking
 if (method_exists($router, 'addRouteFile')) {
