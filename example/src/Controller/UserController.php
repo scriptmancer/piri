@@ -32,6 +32,13 @@ class UserController
         return ['user' => $this->users[$id]];
     }
 
+    #[Route('/{username:[a-zA-Z]+}')]
+    public function alphaUsername(array $params): string
+    {
+        $username = $params['username'] ?? 'unknown';
+        return "Username: {$username}";
+    }
+    
     #[Route('/{id:\d+}/posts/{postId?}', name: 'users.posts')]
     public function posts(array $params): array
     {

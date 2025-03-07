@@ -176,7 +176,7 @@ class Router implements RouterInterface
      *
      * @param array<MiddlewareInterface> $middleware
      * @param callable|array $handler
-     * @param array $parameters
+     * @param array<string, mixed> $parameters
      * @return mixed
      */
     private function executeMiddlewareChain(array $middleware, callable|array $handler, array $parameters): mixed
@@ -188,40 +188,56 @@ class Router implements RouterInterface
                     $reflection = new \ReflectionMethod($handler[0], $handler[1]);
                     $reflectionParams = $reflection->getParameters();
                     
-                    // Convert parameters to the correct types
-                    foreach ($parameters as $name => $value) {
-                        foreach ($reflectionParams as $param) {
-                            if ($param->getName() === $name && $param->hasType()) {
+                    // If the method has only one parameter and it's an array, pass the parameters as a single array
+                    if (count($reflectionParams) === 1 && $reflectionParams[0]->getType() && 
+                        $reflectionParams[0]->getType()->getName() === 'array') {
+                        return call_user_func($handler, $parameters);
+                    }
+                    
+                    // Otherwise, convert parameters to the correct types for named parameters
+                    $namedParameters = [];
+                    foreach ($reflectionParams as $param) {
+                        $paramName = $param->getName();
+                        if (isset($parameters[$paramName])) {
+                            $value = $parameters[$paramName];
+                            
+                            // Convert to the correct type if type is specified
+                            if ($param->hasType()) {
                                 $type = $param->getType();
                                 
-                                // Convert to the correct type
                                 if ($type instanceof \ReflectionNamedType) {
                                     $typeName = $type->getName();
                                     
                                     switch ($typeName) {
                                         case 'int':
-                                            $parameters[$name] = (int) $value;
+                                            $value = (int) $value;
                                             break;
                                         case 'float':
-                                            $parameters[$name] = (float) $value;
+                                            $value = (float) $value;
                                             break;
                                         case 'bool':
-                                            $parameters[$name] = (bool) $value;
+                                            $value = (bool) $value;
                                             break;
                                         case 'string':
-                                            $parameters[$name] = (string) $value;
+                                            $value = (string) $value;
                                             break;
                                         case 'array':
-                                            $parameters[$name] = (array) $value;
+                                            $value = (array) $value;
                                             break;
                                     }
                                 }
                             }
+                            
+                            $namedParameters[$paramName] = $value;
+                        } elseif ($param->isDefaultValueAvailable()) {
+                            $namedParameters[$paramName] = $param->getDefaultValue();
                         }
                     }
+                    
+                    return call_user_func_array($handler, $namedParameters);
                 }
                 
-                return call_user_func_array($handler, $parameters);
+                return call_user_func_array($handler, [$parameters]);
             }
             
             return $handler($parameters);
